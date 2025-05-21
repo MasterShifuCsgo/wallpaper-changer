@@ -3,8 +3,7 @@ use std::path::PathBuf;
 
 use std::ffi::OsStr;
 use std::os::windows::ffi::OsStrExt;
-use windows::{
-    core::PCWSTR,
+use windows::{    
     Win32::UI::WindowsAndMessaging::{
         SystemParametersInfoW, SPI_SETDESKWALLPAPER, SPIF_SENDWININICHANGE, SPIF_UPDATEINIFILE,
     },
