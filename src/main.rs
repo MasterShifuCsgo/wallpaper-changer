@@ -1,6 +1,5 @@
 use std::fs;
-use std::path::Path;
-use std::{io::Write, path::PathBuf, thread, time};
+use std::{io::Write, path::PathBuf};
 
 use fastrand;
 use reqwest;
@@ -121,7 +120,7 @@ async fn main() {
     for i in 0.. {
         sleep(500);
 
-        let mut wallpaper: Result<PathBuf, String>;
+        let wallpaper: Result<PathBuf, String>;
 
         if FETCH {
             wallpaper = fetch_wallpaper(i).await;
