@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::Path;
 use std::{io::Write, path::PathBuf, thread, time};
 
 use fastrand;
@@ -13,13 +14,15 @@ use windows::Win32::UI::WindowsAndMessaging::{
 
 // CFG
 const SAVE_FETCHED_FILE: bool = false; // (true) when an image is fetched from the internet, it creats a copy of it instead rather than overwrite. 
-const FETCHED_Y: u32 = 192; // sets the HEIGHT of the image when fetching from https://picsum.photos/1920/1080
-const FETCHED_X: u32 = 180; // sets the WIDTH of the image when fetching from https://picsum.photos/1920/1080
+const FETCH: bool = true; // Fetch the wallpaper from https://picsum.photos/1920/1080 instead of taking wallpapers from specified directory
+const WALLPAPERS_DIR: &str = "path"; // change this to the jpg path
+const FETCHED_Y: u32 = 1920; // sets the HEIGHT of the fetched image 
+const FETCHED_X: u32 = 1080; // sets the WIDTH of the fetched image
 
 // 1. puts all the jpg files in to a vector.
 // 2. then chooses a random number
 // 3. returns the random jpg path.
-fn get_random_wallpaper(desktop_images: &PathBuf) -> Result<PathBuf, &str> {
+fn get_random_wallpaper(desktop_images: &PathBuf) -> Result<PathBuf, String> {
     //includes all the directories of the jpg files.
     let mut wallpapers: Vec<PathBuf> = Vec::new();
 
@@ -39,7 +42,7 @@ fn get_random_wallpaper(desktop_images: &PathBuf) -> Result<PathBuf, &str> {
 
     // error check
     if wallpapers.len() <= 0 {
-        return Err("Failed to choose jpg, because no jpgs in wallpapers folder.");
+        return Err("Failed to choose jpg, because no jpgs in wallpapers folder.".to_string());
     }
 
     // choosing random number
@@ -115,14 +118,19 @@ fn sleep(m: u64) {
 
 #[tokio::main]
 async fn main() {
-    //let wallpapers_dir = PathBuf::from("C:/Users/kaspar/Desktop/Kaspar Files/Personal folder/Desktop images");
-
     for i in 0.. {
         sleep(500);
-        //let wallpaper_path1 = get_random_wallpaper(&wallpapers_dir);
-        let wallpaper_path2 = fetch_wallpaper(i).await;
 
-        match wallpaper_path2 {
+        let mut wallpaper: Result<PathBuf, String>;
+
+        if FETCH {
+            wallpaper = fetch_wallpaper(i).await;
+        } else {
+            let user_wallpaper_directory: PathBuf = PathBuf::from(WALLPAPERS_DIR);
+            wallpaper = get_random_wallpaper(&user_wallpaper_directory);
+        }
+
+        match wallpaper {
             Ok(path) => {
                 //apply the random wallpaper to windows wallpaper
 
